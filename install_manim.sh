@@ -1,0 +1,1 @@
+pip install manim  -i https://pypi.tuna.tsinghua.edu.cn/simple 
