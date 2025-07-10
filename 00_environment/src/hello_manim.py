@@ -3,7 +3,7 @@ from manim import *
 class HelloWorld(Scene):
     def construct(self):
         # 创建文字对象
-        text = Text("Hello, Manim!")
+        text = Text("Hello, Manim! 你好，Manim!")
         
         # 显示文字
         self.play(Write(text))
