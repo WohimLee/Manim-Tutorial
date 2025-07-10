@@ -11,6 +11,7 @@ zh-en-data
 zh-en-tokens
 .ipynb_checkpoints
 .venv
+media
 
 # files
 *.pt
