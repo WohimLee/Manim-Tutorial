@@ -3,17 +3,15 @@ from manim import *
 
 class SqrtRootScene(Scene):
     def construct(self):
-        self.show_title()
-        self.show_goal()
-        self.show_assumption_step()
-        self.convert_to_equation()
-        # self.math_manipulation()
+        # self.show_title()
+        # self.show_goal()
+        self.solution_process()
         # self.define_function()
         # self.derive_derivative()
         # self.show_final_note()
 
     def show_title(self):
-        title = Text("Solving Square Roots")
+        title = Text("Solving Square Roots", font_size=60)
 
         self.play(FadeIn(title))
         self.wait(1)
@@ -35,7 +33,7 @@ class SqrtRootScene(Scene):
         self.wait(1)
         self.play(FadeOut(texts))
 
-    def show_assumption_step(self):
+    def solution_process(self):
         # Step 1: 显示假设与初始等式
         assume = Tex(r"Assume $\sqrt{a} = x$, then:")
         equation = Tex(r"$x = \sqrt{a}$")
@@ -50,7 +48,9 @@ class SqrtRootScene(Scene):
         self.play(equation.animate.shift(UP*2.5))
         self.wait()
 
-    def convert_to_equation(self):
+        self.math_manipulation(equation)
+
+    def math_manipulation(self, extra_mobjects=None):
 
         steps = [
             ("First, square both sides.", r"x^2 = a"),
@@ -62,6 +62,9 @@ class SqrtRootScene(Scene):
         explanations = []
         equations = []
 
+        # 用于统一管理所有展示的元素
+        all_mobjects = VGroup()
+
         for text, eq in steps:
             explanations.append(Text(text, font_size=32))
             equations.append(Tex(f"${eq}$", font_size=45))
@@ -70,6 +73,7 @@ class SqrtRootScene(Scene):
         for i in range(len(steps)):
             explanations[i].to_edge(LEFT*6).shift(UP * (1.5 - i*1))
             equations[i].next_to(explanations[i], RIGHT, buff=0.8)
+            all_mobjects.add(explanations[i], equations[i])
 
         # Animate them one by one
         for i in range(len(steps)):
@@ -84,25 +88,33 @@ class SqrtRootScene(Scene):
         )
         note.to_edge(DOWN)
         self.play(FadeIn(note))
-        self.wait(3)
+        self.wait(1)
 
-    def math_manipulation(self):
-        equations = VGroup(
-            Tex(r"$x^2 = a$"),
-            Tex(r"$x^2 - a = 0$"),
-            Tex(r"$(x^2 - a)^2 = 0$"),
-            Tex(r"$\frac{1}{2}(x^2 - a)^2 = 0$ (constant can be changed)")
-        ).arrange(DOWN, buff=0.5)
-        self.play(LaggedStartMap(Write, equations, lag_ratio=0.6))
-        self.wait(2)
-        self.play(FadeOut(equations))
+        all_mobjects.add(note)
+        if extra_mobjects:
+            all_mobjects.add(*extra_mobjects)
 
-    def define_function(self):
-        func_def = Tex(r"Define: $f(x) = \frac{1}{2}(x^2 - a)^2$")
-        domain_info1 = Tex(r"$f(x) \geq 0$, so the problem becomes:")
-        domain_info2 = Tex(r"find the minimum value of $f(x)$")
-        group = VGroup(func_def, domain_info1, domain_info2).arrange(DOWN)
-        self.play(Write(func_def), Write(domain_info1), Write(domain_info2))
+        self.play(Indicate(equations[3], scale_factor=1.5))
+
+        # 清屏
+        self.play(
+            FadeOut(all_mobjects),
+            equations[3].animate.move_to(UP*2)
+            )
+        self.wait()
+        return equations[3]
+
+    def define_function(self, extra_mobjects=None):
+        steps = VGroup(
+            Tex(r"Define: $f(x) = \frac{1}{2}(x^2 - a)^2$"),
+            Tex(r"$f(x) \geq 0$"),
+            Tex(r"so the problem becomes:"),
+            Tex(r"find the minimum value of $f(x)$")
+        ).arrange(DOWN, buff=1)
+
+        for step in steps:
+            self.play(Write(step))
+            self.wait(1)
         self.wait(2)
 
     def derive_derivative(self):
