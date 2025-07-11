@@ -1,0 +1,1 @@
+manim -pqh /Users/azen/Desktop/llm/Manim-Tutorial/examples/03_plotting_with_manim/03_graph_area_plot.py GraphAreaPlot --format gif
