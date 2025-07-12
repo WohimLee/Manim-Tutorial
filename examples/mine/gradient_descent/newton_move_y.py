@@ -66,7 +66,7 @@ class NewtonsMethod(MovingCameraScene):
             # 新交点（x_new, 0）上的绿点
             next_x_dot = Dot(axes.c2p(x_new, y_new), color=GREEN)
 
-            # 放大镜头并把绿点并画出来
+            # 移动到绿点并画出来
             self.play(self.camera.frame.animate.scale(0.5).move_to(next_x_dot))
             self.play(FadeIn(next_x_dot))
 
@@ -90,12 +90,7 @@ class NewtonsMethod(MovingCameraScene):
                 mob.move_to(moving_dot.get_center())
 
             self.camera.frame.add_updater(update_camera)  # 添加摄像机跟随逻辑
-            start = moving_dot.get_center()
-            end = axes.c2p(x_new, f(x_new))
-            path = Line(start, end)
-
-            self.play(MoveAlongPath(moving_dot, path))
-            # self.play(moving_dot.animate.move_to(axes.c2p(x_new, f(x_new))))
+            self.play(moving_dot.animate.move_to(axes.c2p(x_new, f(x_new))), rate_func=linear)
 
             # 方式二：只移动
             # self.play(moving_dot.animate.move_to(axes.c2p(x_new, f(x_new))))

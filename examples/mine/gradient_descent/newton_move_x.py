@@ -39,14 +39,27 @@ class NewtonsMethod(MovingCameraScene):
         self.wait(0.5)
 
         # 设置牛顿法的初始点
-        x = 2.5
-        moving_dot = Dot(axes.c2p(x, f(x)), color=RED)
+        x_cur = 2.5
+        moving_dot = Dot(axes.c2p(x_cur, 0), color=GREEN)
         self.play(FadeIn(moving_dot))
-
+        
         # 进行多次牛顿迭代
-        self.camera.frame.save_state()
+        self.camera.frame.save_state() # 保存相机初始状态，Restore 使用
         for _ in range(3):
-            x_old = x
+            
+            # 从 x 轴的点画一条虚线连接到函数图像上
+            v_line = DashedLine(
+                start=axes.c2p(x_cur, 0),
+                end=axes.c2p(x_cur, f(x_cur)),
+                color=GRAY,
+                dashed_ratio=0.5
+            )
+            self.play(Create(v_line))
+
+            intersection = Dot(axes.c2p(x_cur, f(x_cur)), color=RED)
+            self.play(FadeIn(intersection))
+
+            x_old = x_cur
             y_old = f(x_old)
             slope = df(x_old)
 
@@ -63,50 +76,26 @@ class NewtonsMethod(MovingCameraScene):
             self.play(Create(tangent), run_time=2, rate_func=linear)
             self.wait(1)
 
-            # 新交点（x_new, 0）上的绿点
+            # 新交点（x_new, 0）
             next_x_dot = Dot(axes.c2p(x_new, y_new), color=GREEN)
 
-            # 放大镜头并把绿点并画出来
+            # 镜头放大到新交点（x_new, 0）
             self.play(self.camera.frame.animate.scale(0.5).move_to(next_x_dot))
-            self.play(FadeIn(next_x_dot))
 
-        
-            # 从交点画一条虚线连接到函数图像上
-            v_line = DashedLine(
-                start=axes.c2p(x_new, 0),
-                end=axes.c2p(x_new, f(x_new)),
-                color=GRAY,
-                dashed_ratio=0.5
-            )
-            self.play(Create(v_line))
+            # 移动到新交点（x_new, 0）
+            self.play(moving_dot.animate.move_to(axes.c2p(x_new, 0)))
+            self.wait(1)
+            
             # 恢复画面大小
             self.play(Restore(self.camera.frame))
 
-            
-
-            # 红点移动到函数图像上的新位置
-            # 方式一：镜头跟随
-            def update_camera(mob):
-                mob.move_to(moving_dot.get_center())
-
-            self.camera.frame.add_updater(update_camera)  # 添加摄像机跟随逻辑
-            start = moving_dot.get_center()
-            end = axes.c2p(x_new, f(x_new))
-            path = Line(start, end)
-
-            self.play(MoveAlongPath(moving_dot, path))
-            # self.play(moving_dot.animate.move_to(axes.c2p(x_new, f(x_new))))
-
-            # 方式二：只移动
-            # self.play(moving_dot.animate.move_to(axes.c2p(x_new, f(x_new))))
             self.wait(0.5)
 
-            # self.play(MoveAlongPath(moving_dot, graph, rate_func=linear))
-
             # 更新 x 值
-            x = x_new
+            x_cur = x_new
 
             # 移除辅助图形（可选）
-            self.remove(tangent, next_x_dot, v_line)
+            self.play(FadeOut(tangent, intersection, v_line))
+            # self.remove(tangent, intersection, v_line)
 
         self.wait(2)
