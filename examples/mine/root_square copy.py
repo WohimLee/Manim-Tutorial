@@ -106,7 +106,7 @@ class SqrtRootScene(Scene):
         return equations[3]
 
     def define_function(self, extra_mobjects=None):
-        transforms = 
+        
         steps = VGroup(
             Tex(r"Define: $f(x) = \frac{1}{2}(x^2 - a)^2$"),
             Tex(r"$f(x) \geq 0$"),
