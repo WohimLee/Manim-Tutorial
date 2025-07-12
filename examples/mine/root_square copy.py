@@ -6,7 +6,6 @@ class SqrtRootScene(Scene):
         # self.show_title()
         # self.show_goal()
         self.solution_process()
-        # self.define_function()
         # self.derive_derivative()
         # self.show_final_note()
 
@@ -48,7 +47,9 @@ class SqrtRootScene(Scene):
         self.play(equation.animate.shift(UP*2.5))
         self.wait()
 
-        self.math_manipulation(equation)
+        new_equation = self.math_manipulation(equation)
+
+        self.define_function(new_equation)
 
     def math_manipulation(self, extra_mobjects=None):
 
@@ -101,10 +102,11 @@ class SqrtRootScene(Scene):
             FadeOut(all_mobjects),
             equations[3].animate.move_to(UP*2)
             )
-        self.wait()
+        self.wait(1)
         return equations[3]
 
     def define_function(self, extra_mobjects=None):
+        transforms = 
         steps = VGroup(
             Tex(r"Define: $f(x) = \frac{1}{2}(x^2 - a)^2$"),
             Tex(r"$f(x) \geq 0$"),
