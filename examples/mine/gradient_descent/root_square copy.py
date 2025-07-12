@@ -3,8 +3,8 @@ from manim import *
 
 class SqrtRootScene(Scene):
     def construct(self):
-        # self.show_title()
-        # self.show_goal()
+        self.show_title()
+        self.show_goal()
         self.solution_process()
         # self.derive_derivative()
         # self.show_final_note()
@@ -106,7 +106,7 @@ class SqrtRootScene(Scene):
         return equations[3]
 
     def define_function(self, extra_mobjects=None):
-        
+
         steps = VGroup(
             Tex(r"Define: $f(x) = \frac{1}{2}(x^2 - a)^2$"),
             Tex(r"$f(x) \geq 0$"),
