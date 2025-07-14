@@ -49,15 +49,13 @@ class SqrtRootScene(Scene):
 
         new_equation = self.math_manipulation(equation)
 
-        self.define_function(new_equation)
-
     def math_manipulation(self, extra_mobjects=None):
 
         steps = [
-            ("First, square both sides.", r"x^2 = a"),
-            ("Rearrange the equation.", r"x^2 - a = 0"),
-            ("Square both sides again.", r"(x^2 - a)^2 = 0"),
-            ("Multiply both sides by 1/2.", r"\frac{1}{2}(x^2 - a)^2 = 0"),
+            ("First, square both sides.", [r"x^2", "=", "a"]),
+            ("Rearrange the equation.", [r"x^2 - a", "=", "0"]),
+            ("Square both sides again.", [r"(x^2 - a)^2", "=", "0"]),
+            ("Multiply both sides by 1/2.", [r"\frac{1}{2}(x^2 - a)^2", "=", "0"]),
         ]
 
         explanations = []
@@ -68,7 +66,7 @@ class SqrtRootScene(Scene):
 
         for text, eq in steps:
             explanations.append(Text(text, font_size=32))
-            equations.append(Tex(f"${eq}$", font_size=45))
+            equations.append(MathTex(*eq, font_size=45))
 
         # Arrange them step by step vertically
         for i in range(len(steps)):
@@ -98,26 +96,46 @@ class SqrtRootScene(Scene):
         self.play(Indicate(equations[3], scale_factor=1.5))
 
         # 清屏
+        all_mobjects.remove(equations[3])
         self.play(
             FadeOut(all_mobjects),
             equations[3].animate.move_to(UP*2)
             )
         self.wait(1)
-        return equations[3]
+        
+        ### === 开始转换公式 === ###
 
-    def define_function(self, extra_mobjects=None):
+        # 移除 "= 0"
+        self.play(FadeOut(equations[3][1]), FadeOut(equations[3][2]))
+        self.wait(0.3)
 
+        # 创建新公式前缀
+        new_eq = MathTex(r"\text{Define: } f(x) =", r"\frac{1}{2}(x^2 - a)^2", font_size=45)
+        new_eq.move_to(equations[3].get_center())
+
+        # 动画替换核心部分，写入前缀
+        self.play(
+            Transform(equations[3][0], new_eq[1]),  # 替换主体部分
+            Write(new_eq[0])                 # 写入 Define: f(x) =
+        )
+        self.wait(1)
+
+        # === 添加 f(x) 的分析步骤 === #
+        # 提前对其位置设置（靠下）
         steps = VGroup(
-            Tex(r"Define: $f(x) = \frac{1}{2}(x^2 - a)^2$"),
-            Tex(r"$f(x) \geq 0$"),
-            Tex(r"so the problem becomes:"),
-            Tex(r"find the minimum value of $f(x)$")
-        ).arrange(DOWN, buff=1)
+            Tex(r"Then the range of $f(x)$ is: $f(x) \geq 0$", font_size=45),
+            Tex(r"So the problem becomes:", font_size=45),
+            Tex(r"Find the minimum value of $f(x)$", font_size=45)
+        ).arrange(DOWN, buff=0.6)
+        steps.next_to(new_eq, DOWN, buff=1.2)
 
+        # 动画逐条展示
         for step in steps:
             self.play(Write(step))
             self.wait(1)
+
         self.wait(2)
+
 
     def derive_derivative(self):
         derivative = Tex(r"$f'(x) = 2x(x^2 - a)$")
